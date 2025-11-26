@@ -45,7 +45,8 @@ class Dictionary:
         return default
     
     def clear(self):
-        self.table = [[] for _ in range(8)]
+        current_capacity = len(self.table)
+        self.table = [[] for _ in range(current_capacity)]
         self.size = 0
     
     def __delitem__(self, key):
@@ -62,14 +63,15 @@ class Dictionary:
     
     def _resize(self):
         old_table = self.table
-        old_capacity = len(old_table)
-        new_capacity = old_capacity * 2
-
+        new_capacity = len(old_table) * 2
         self.table = [[] for _ in range(new_capacity)]
         self.size = 0
 
         for bucket in old_table:
             for node in bucket:
                 key = node[0]
+                hash_value = node[1]
                 value = node[2]
-                self[key] = value
+                new_index = hash_value % new_capacity
+                self.table[new_index].append((key, hash_value, value))
+                self.size += 1
